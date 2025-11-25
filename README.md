@@ -1,54 +1,40 @@
-# Recall-App Infrastructure
+# Infrastructure Repository
 
-Terraform configuration for deploying the recall-app to GCP with GKE.
+Terraform configurations for multi-project infrastructure management.
 
-## Overview
+## Structure
 
-This repository provisions:
-- VPC with private subnets and Cloud NAT
-- GKE Standard cluster with node pools
-- Artifact Registry for container images
-- Service accounts for CI/CD
-
-## Prerequisites
-
-- GCP project with billing enabled
-- Terraform >= 1.5.0
-- gcloud CLI configured
+```
+.
+├── modules/                    # Reusable infrastructure modules
+│   ├── vpc/                    # VPC networking
+│   ├── gke/                    # GKE cluster
+│   └── artifact-registry/      # Container registry
+└── projects/                   # Project-specific configurations
+    └── lineten/
+        └── dev/                # Development environment
+```
 
 ## Usage
 
 ```bash
-# Create state bucket (first time only)
-gsutil mb -p lineten -l us-east1 gs://lineten-terraform-state
-gsutil versioning set on gs://lineten-terraform-state
-
-# Deploy
+cd projects/lineten/dev
 terraform init
 terraform plan
 terraform apply
 ```
 
-## Configuration
+## Adding New Projects
 
-Edit `terraform.tfvars` to customize:
+1. Create directory: `projects/<project-name>/<environment>/`
+2. Copy configuration from existing project
+3. Update `terraform.tfvars` with project-specific values
+4. Update `backend.tf` with unique state prefix
 
-```hcl
-project_id  = "lineten"
-region      = "us-east1"
-environment = "dev"
-```
+## Modules
 
-## Outputs
-
-After apply, get cluster credentials:
-
-```bash
-$(terraform output -raw gke_connect_command)
-```
-
-## Cleanup
-
-```bash
-terraform destroy
-```
+| Module | Description |
+|--------|-------------|
+| vpc | VPC, subnets, Cloud NAT |
+| gke | GKE Standard cluster with node pools |
+| artifact-registry | Docker registry + CI/CD service account |
