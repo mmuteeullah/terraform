@@ -1,7 +1,7 @@
 resource "google_container_cluster" "main" {
   name     = "${var.project_id}-cluster-${var.environment}"
   project  = var.project_id
-  location = var.region
+  location = var.zone != "" ? var.zone : var.region
 
   remove_default_node_pool = true
   initial_node_count       = 1
@@ -42,7 +42,7 @@ resource "google_container_cluster" "main" {
 resource "google_container_node_pool" "main" {
   name     = "${var.project_id}-nodepool-${var.environment}"
   project  = var.project_id
-  location = var.region
+  location = var.zone != "" ? var.zone : var.region
   cluster  = google_container_cluster.main.name
 
   initial_node_count = var.node_count
@@ -56,6 +56,7 @@ resource "google_container_node_pool" "main" {
     machine_type = var.machine_type
     disk_size_gb = var.disk_size_gb
     disk_type    = "pd-standard"
+    spot         = var.use_spot
 
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform"

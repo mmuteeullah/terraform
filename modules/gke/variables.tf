@@ -6,6 +6,11 @@ variable "region" {
   type = string
 }
 
+variable "zone" {
+  type    = string
+  default = ""
+}
+
 variable "environment" {
   type = string
 }
@@ -30,7 +35,7 @@ variable "machine_type" {
 
 variable "disk_size_gb" {
   type    = number
-  default = 10
+  default = 20
 }
 
 variable "node_count" {
@@ -51,4 +56,9 @@ variable "max_node_count" {
 variable "master_authorized_cidr" {
   type    = string
   default = "0.0.0.0/0"
+}
+
+variable "use_spot" {
+  type    = bool
+  default = true
 }
