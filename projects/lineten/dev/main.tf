@@ -30,12 +30,13 @@ module "vpc" {
 module "gke" {
   source = "../../../modules/gke"
 
-  project_id   = var.project_id
-  region       = var.region
-  zone         = "${var.region}-b"
-  environment  = var.environment
-  network_name = module.vpc.network_name
-  subnet_name  = module.vpc.subnet_name
+  project_id             = var.project_id
+  region                 = var.region
+  zone                   = "${var.region}-b"
+  environment            = var.environment
+  network_name           = module.vpc.network_name
+  subnet_name            = module.vpc.subnet_name
+  master_authorized_cidr = var.master_authorized_cidr
 
   depends_on = [module.vpc]
 }

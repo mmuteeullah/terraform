@@ -54,8 +54,8 @@ variable "max_node_count" {
 }
 
 variable "master_authorized_cidr" {
-  type    = string
-  default = "0.0.0.0/0"
+  description = "CIDR block authorized to access the GKE master. Must be explicitly set - do not use 0.0.0.0/0 in production."
+  type        = string
 }
 
 variable "use_spot" {

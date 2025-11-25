@@ -33,7 +33,3 @@ resource "google_project_iam_member" "cicd_gke" {
   role    = "roles/container.developer"
   member  = "serviceAccount:${google_service_account.cicd.email}"
 }
-
-resource "google_service_account_key" "cicd" {
-  service_account_id = google_service_account.cicd.name
-}

@@ -14,3 +14,8 @@ variable "environment" {
   type        = string
   default     = "dev"
 }
+
+variable "master_authorized_cidr" {
+  description = "CIDR block authorized to access the GKE master"
+  type        = string
+}
