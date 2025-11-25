@@ -26,3 +26,13 @@ output "wif_provider" {
 output "cicd_sa_email" {
   value = module.artifact_registry.cicd_sa_email
 }
+
+output "certificate_map_id" {
+  description = "Certificate map ID to attach to load balancer"
+  value       = google_certificate_manager_certificate_map.recall_app.id
+}
+
+output "certificate_status" {
+  description = "Certificate provisioning status"
+  value       = google_certificate_manager_certificate.recall_app.managed[0].state
+}
