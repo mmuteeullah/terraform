@@ -23,3 +23,11 @@ output "gke_connect_command" {
 output "recall_app_ip" {
   value = google_compute_global_address.recall_app.address
 }
+
+output "wif_provider" {
+  value = google_iam_workload_identity_pool_provider.github.name
+}
+
+output "cicd_sa_email" {
+  value = module.artifact_registry.cicd_sa_email
+}

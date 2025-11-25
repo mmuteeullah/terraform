@@ -14,3 +14,7 @@ output "cicd_sa_key" {
   value     = google_service_account_key.cicd.private_key
   sensitive = true
 }
+
+output "cicd_sa_id" {
+  value = google_service_account.cicd.id
+}
