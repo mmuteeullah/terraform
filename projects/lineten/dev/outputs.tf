@@ -17,5 +17,5 @@ output "cicd_sa_key" {
 }
 
 output "gke_connect_command" {
-  value = "gcloud container clusters get-credentials ${module.gke.cluster_name} --region ${var.region} --project ${var.project_id}"
+  value = "gcloud container clusters get-credentials ${module.gke.cluster_name} --zone ${var.region}-b --project ${var.project_id}"
 }
