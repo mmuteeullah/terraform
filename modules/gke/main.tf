@@ -22,8 +22,8 @@ resource "google_container_cluster" "main" {
 
   master_authorized_networks_config {
     cidr_blocks {
-      cidr_block   = "0.0.0.0/0"
-      display_name = "All"
+      cidr_block   = var.master_authorized_cidr
+      display_name = "Authorized"
     }
   }
 

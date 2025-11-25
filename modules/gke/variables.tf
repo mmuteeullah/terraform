@@ -47,3 +47,8 @@ variable "max_node_count" {
   type    = number
   default = 3
 }
+
+variable "master_authorized_cidr" {
+  type    = string
+  default = "0.0.0.0/0"
+}
