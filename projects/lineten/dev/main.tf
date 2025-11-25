@@ -49,3 +49,8 @@ module "artifact_registry" {
 
   depends_on = [google_project_service.apis]
 }
+
+resource "google_compute_global_address" "recall_app" {
+  name    = "recall-app-ip"
+  project = var.project_id
+}
