@@ -33,6 +33,22 @@ output "certificate_map_id" {
 }
 
 output "certificate_status" {
-  description = "Certificate provisioning status"
+  description = "Certificate provisioning status for recall-app"
   value       = google_certificate_manager_certificate.recall_app.managed[0].state
+}
+
+# Carworth outputs
+output "carworth_ip" {
+  description = "Static IP for carworth"
+  value       = google_compute_global_address.carworth.address
+}
+
+output "carworth_certificate_map_id" {
+  description = "Certificate map ID for carworth"
+  value       = google_certificate_manager_certificate_map.carworth.id
+}
+
+output "carworth_certificate_status" {
+  description = "Certificate provisioning status for carworth"
+  value       = google_certificate_manager_certificate.carworth.managed[0].state
 }

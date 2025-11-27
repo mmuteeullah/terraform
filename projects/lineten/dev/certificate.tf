@@ -78,3 +78,88 @@ resource "google_compute_global_forwarding_rule" "recall_app_https" {
   port_range = "443"
   ip_address = google_compute_global_address.recall_app.address
 }
+
+# ============================================================================
+# CARWORTH Certificate Configuration
+# ============================================================================
+
+# DNS Authorization - creates the challenge record details
+resource "google_certificate_manager_dns_authorization" "carworth" {
+  project     = var.project_id
+  name        = "carworth-dns-auth"
+  domain      = var.carworth_domain
+  description = "DNS authorization for ${var.carworth_domain}"
+
+  depends_on = [google_project_service.certificatemanager]
+}
+
+# Cloudflare TXT record for DNS validation
+resource "cloudflare_record" "carworth_cert_validation" {
+  zone_id = var.cloudflare_zone_id
+  name    = google_certificate_manager_dns_authorization.carworth.dns_resource_record[0].name
+  type    = google_certificate_manager_dns_authorization.carworth.dns_resource_record[0].type
+  content = google_certificate_manager_dns_authorization.carworth.dns_resource_record[0].data
+  ttl     = 300
+  proxied = false
+}
+
+# GCP Managed Certificate
+resource "google_certificate_manager_certificate" "carworth" {
+  project     = var.project_id
+  name        = "carworth-cert"
+  description = "Managed certificate for ${var.carworth_domain}"
+
+  managed {
+    domains = [var.carworth_domain]
+    dns_authorizations = [
+      google_certificate_manager_dns_authorization.carworth.id
+    ]
+  }
+
+  depends_on = [cloudflare_record.carworth_cert_validation]
+}
+
+# Certificate Map
+resource "google_certificate_manager_certificate_map" "carworth" {
+  project     = var.project_id
+  name        = "carworth-cert-map"
+  description = "Certificate map for ${var.carworth_domain}"
+
+  depends_on = [google_project_service.certificatemanager]
+}
+
+# Certificate Map Entry
+resource "google_certificate_manager_certificate_map_entry" "carworth" {
+  project      = var.project_id
+  name         = "carworth-cert-map-entry"
+  map          = google_certificate_manager_certificate_map.carworth.name
+  certificates = [google_certificate_manager_certificate.carworth.id]
+  hostname     = var.carworth_domain
+}
+
+# Cloudflare A record pointing to the static IP
+resource "cloudflare_record" "carworth_a" {
+  zone_id = var.cloudflare_zone_id
+  name    = "carworth"
+  type    = "A"
+  content = google_compute_global_address.carworth.address
+  ttl     = 1  # Auto TTL when proxied
+  proxied = false  # Set to false for GCP managed cert validation; can enable later
+}
+
+# HTTPS Target Proxy with Certificate Map
+resource "google_compute_target_https_proxy" "carworth" {
+  project          = var.project_id
+  name             = "carworth-https-proxy"
+  url_map          = "https://www.googleapis.com/compute/v1/projects/${var.project_id}/global/urlMaps/${var.carworth_gke_url_map_name}"
+  certificate_map  = "https://certificatemanager.googleapis.com/v1/${google_certificate_manager_certificate_map.carworth.id}"
+}
+
+# HTTPS Forwarding Rule (port 443)
+resource "google_compute_global_forwarding_rule" "carworth_https" {
+  project    = var.project_id
+  name       = "carworth-https-forwarding-rule"
+  target     = google_compute_target_https_proxy.carworth.id
+  port_range = "443"
+  ip_address = google_compute_global_address.carworth.address
+}

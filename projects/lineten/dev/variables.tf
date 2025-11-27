@@ -38,6 +38,17 @@ variable "domain" {
 }
 
 variable "gke_url_map_name" {
-  description = "Name of the GKE Ingress-managed URL map"
+  description = "Name of the GKE Ingress-managed URL map for recall-app"
+  type        = string
+}
+
+variable "carworth_domain" {
+  description = "Domain name for carworth application"
+  type        = string
+  default     = "carworth.b0lt.foo"
+}
+
+variable "carworth_gke_url_map_name" {
+  description = "Name of the GKE Ingress-managed URL map for carworth"
   type        = string
 }
